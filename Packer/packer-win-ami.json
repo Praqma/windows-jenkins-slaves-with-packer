@@ -5,8 +5,7 @@
     "region": "",
     "instance_type": "",
     "master_URL": "",
-    "jenkins_credential": "",
-    "subnet_id": "subnet-ff096598"
+    "jenkins_credential": ""
   },
   "builders": [{
     "type": "amazon-ebs",
@@ -18,7 +17,6 @@
     "access_key": "{{user `aws_access_key`}}",
     "secret_key": "{{user `aws_secret_key`}}",
     "region": "{{user `region`}}",
-    "subnet_id": "{{user `subnet_id`}}",
     "source_ami_filter": {
       "filters": {
       "virtualization-type": "hvm",
