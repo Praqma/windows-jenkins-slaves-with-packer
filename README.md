@@ -15,7 +15,7 @@ You can generate the AWS AMI and store it in your AWS account by running the fol
       -var jenkins_credential=<<jenkins_jnlp_credentials>>
       packer-win-ami.json
 
-Once you have a Jenkins master running and an AMI created, you can use Terraform to launch your a number of Windows instances (of whatever machine types you prefer) and have them start and connect the Jenkins slaves to the master:
+Once you have a Jenkins master running and [slave node(s) created](https://support.cloudbees.com/hc/en-us/articles/227834227-How-to-create-a-new-node-), you can use Terraform to launch a number of Windows instances (of whatever machine types you prefer) and have them start and connect the Jenkins slaves to the master:
 
       cd Terraform
       terraform apply -var access_key=<<aws_access_key>> \
