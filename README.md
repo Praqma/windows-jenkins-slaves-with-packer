@@ -24,4 +24,4 @@ Once you have a Jenkins master running and [slave node(s) created](https://suppo
       -var instance_count=2 \
       -var region=eu-west-1 \
       -var instance_types={"0"="t2.micor","1"="t2.small"} \
-      -var slave_names={"0"="slave1","1"="slave2"}
+      -var slave_names={"0"="slave1_name","1"="slave2_name"}
