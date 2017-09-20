@@ -1,12 +1,13 @@
-Packer is used to generate machine images from templates. The templates define how to build the image using builders (specific to the target environment, e.g., AWS or VirtualBox) and provisioners which are used to provision software and perform the required setup in the image. [Packer documentation](https://www.packer.io/intro/getting-started/install.html) provides a good guide to get started.
+Packer is used to generate machine images from templates.
 
 Here, Packer is used for creating Windows Server 2016 AWS AMI which is configured to host Jenkins build slaves.
 
 -----
 ## Contents of this directory
 
- - **ec2-userdata.ps1** is a powershell script used to configure the Windows instance while it is booting. [User data](http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-instance-metadata.html) is an AWS feature to execute commands on an instance while it is booting.
- - **packer-win-ami.json** is the packer template.
+ - **[ec2-userdata.ps1](scripts/ec2-userdata.ps1)** is a powershell script used to configure the Windows instance while it is booting (configuring WinRM for remote management). [User data](http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-instance-metadata.html) is an AWS feature to execute commands on an instance while it is booting.
+ - **[connect-slave.ps1](scripts/connect-slave.ps1)** is a powershell script for starting the build slave.
+ - **[packer-win-ami.json](packer-win-ami.json)** is the packer template.
 
 --------
 ## Windows Specifics
@@ -60,6 +61,8 @@ The following script can be used (source: https://stackoverflow.com/a/37562488/7
     -var instance_type=<<instance_type>> \
     -var aws_access_key=<<aws_access_key>> \
     -var aws_secret_key=<<aws_secret_key>> \
+    -var master_URL=<<jenkins_master_url>> \
+    -var jenkins_credential=<<jenkins_jnlp_credentials>>
     packer-win-ami.json
 
 > **Note** make sure the AWS access keys you use are associated with enough privileges to perform the required steps in your packer template. More details can be found [here](https://www.packer.io/docs/builders/amazon.html#specifying-amazon-credentials)
