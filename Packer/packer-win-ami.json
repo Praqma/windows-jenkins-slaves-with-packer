@@ -1,0 +1,98 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "region": "",
+    "instance_type": "",
+    "master_URL": "",
+    "jenkins_credential": "",
+    "subnet_id": "subnet-ff096598"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "communicator": "winrm",
+    "winrm_username": "Administrator",
+    "winrm_use_ssl": true,
+    "winrm_insecure": true,
+    "user_data_file":"./scripts/ec2-userdata.ps1",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "{{user `region`}}",
+    "subnet_id": "{{user `subnet_id`}}",
+    "source_ami_filter": {
+      "filters": {
+      "virtualization-type": "hvm",
+      "name": "Windows_Server-2016-English-Full-Base-*",
+      "root-device-type": "ebs"
+      },
+      "most_recent": true
+    },
+    "ami_description": "Windows node with Docker installed.",
+    "instance_type": "{{user `instance_type`}}",
+    "ssh_username": "Administrator",
+    "ami_name": "packer-jenkins-win-slave-{{timestamp}}",
+    "tags": {
+    "OS_Version": "Windows_Server-2016",
+    "Release": "Latest"
+    }
+  }],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "inline": [
+        "invoke-webrequest -UseBasicparsing -Outfile docker.zip https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.1-ee-1.zip",
+        "Expand-Archive docker.zip -DestinationPath $Env:ProgramFiles",
+        "Remove-Item -Force docker.zip",
+        "$null = Install-WindowsFeature containers"
+      ]
+    },
+    {
+    "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "$env:path += \";$env:ProgramFiles\\docker\"",
+        "$newPath = \"$env:ProgramFiles\\docker;\" + [Environment]::GetEnvironmentVariable(\"PATH\",[EnvironmentVariableTarget]::Machine)",
+        "[Environment]::SetEnvironmentVariable(\"PATH\", $newPath,[EnvironmentVariableTarget]::Machine)",
+        "dockerd --register-service",
+        "Start-Service docker",
+        "docker version"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "wget 'http://javadl.oracle.com/webapps/download/AutoDL?BundleId=210185' -Outfile 'C:\\jreinstaller.exe'",
+        "Start-Process -filepath C:\\jreinstaller.exe -passthru -wait -argumentlist \"/s\",\"INSTALLDIR=c:\\Java\\jre1.8.0_91\" ",
+        "del C:\\jreinstaller.exe",
+        "$env:JAVA_HOME= \"c:\\Java\\jre1.8.0_91\"",
+        "setx PATH \"$env:path;c:\\Java\\jre1.8.0_91\\bin\""
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "java -version"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "cd C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts",
+        "./InitializeInstance.ps1 -Schedule",
+        "cd C:\\Users\\Administrator\\",
+        "(New-Object System.Net.WebClient).DownloadFile(\"{{user `master_URL`}}/jnlpJars/slave.jar\", 'slave.jar')",
+        "[Environment]::SetEnvironmentVariable(\"MASTER_URL\", \"{{user `master_URL`}}\", \"Machine\")",
+        "[Environment]::SetEnvironmentVariable(\"JENKINS_CREDENTIAL\", \"{{user `jenkins_credential`}}\", \"Machine\")"
+      ]
+    },
+    {
+        "type": "file",
+        "source": "scripts/connect-slave.ps1",
+        "destination": "connect-slave.ps1"
+    }
+
+],
+  "description": "This template creates an AWS AMI for Windows Server 2016 with Docker installed. It also has Java installed."
+}
