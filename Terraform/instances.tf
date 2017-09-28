@@ -7,6 +7,9 @@ resource "aws_instance" "jenkins_slaves" {
   associate_public_ip_address = true
   subnet_id                   = "${aws_subnet.main.id}"
   user_data                   = "${file("scripts/ec2-userdata.ps1")}"
+  # root_block_device           = {
+  #                                  volume_size = 65
+  #                               }
   # key_name                  = "aws-k8s-win"
   tags                        = {
                                    Name  = "Terraform-Win-Jenkins-Slave"
