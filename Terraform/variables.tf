@@ -26,11 +26,13 @@ variable "admin_password" {
 
 
 # defining the Jenkins master URL
-# variable "master_URL" {}
+# variable "master_URL" {
+#   default = ""
+# }
 
 # defining different instance types
 # pass values as:
-# -var 'instance_types={ 0 = "t2.micro", 1 = "t2.medium", ... }'
+# -var 'instance_types={ "0" = "t2.micro", "1" = "t2.medium", ... }'
 variable "instance_types" {
   type = "map"
   default = {
@@ -40,14 +42,14 @@ variable "instance_types" {
 
 # defining secrets for launching Jenkins slaves on Windows instances
 # pass values as:
-# -var 'slave_secrets={ 0 = "sssss", 1 = "yyyyy", ... }'
+# -var 'slave_secrets={ "0" = "sssss", "1" = "yyyyy", ... }'
 # variable "slave_secrets" {
 #   type = "map"
 # }
 
 # defining the names of the created Jenkins slaves on Windows instances
 # pass values as:
-# -var 'slave_names={ 0 = "name0", 1 = "name1", ... }'
+# -var 'slave_names={ "0" = "name0", "1" = "name1", ... }'
 variable "slave_names" {
   type = "map"
 }
