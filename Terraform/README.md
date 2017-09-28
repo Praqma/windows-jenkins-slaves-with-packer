@@ -14,5 +14,5 @@ The templates create a new VPC, subnet, security group etc. and then launch an E
     -var admin_password=<<admin_password_for_windows>> \
     -var instance_count=<<number_of_instances_to_launch>> \
     -var region=<<aws_region>> \
-    -var instance_types={"0"="<<machine0_instance_type>>"} \
-    -var slave_names={"0"="<<slave0_name>>"}
+    -var 'instance_types={ "0" = "<<machine0_instance_type>>"}' \
+    -var 'slave_names={ "0" = "<<slave0_name>>"}'
