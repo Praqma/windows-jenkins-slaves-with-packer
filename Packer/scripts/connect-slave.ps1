@@ -6,5 +6,7 @@ param(
 write-output "Starting Jenkins slave ... "
 write-host "(host) Starting Jenkins slave  ... "
 
-start powershell {java -jar slave.jar -jnlpUrl $env:MASTER_URL/computer/$slave_name/slave-agent.jnlp -jnlpCredentials $env:JENKINS_CREDENTIAL}
+$url = "$env:MASTER_URL/computer/$slave_name/slave-agent.jnlp"
+Start-Process java -ArgumentList '-jar', 'slave.jar', '-jnlpUrl', $url, '-jnlpCredentials', $env:JENKINS_CREDENTIAL  -RedirectStandardOutput '.\console.out' -RedirectStandardError '.\console.err'
+
 Exit 0
